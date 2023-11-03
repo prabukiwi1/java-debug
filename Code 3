@@ -1,0 +1,39 @@
+public class ComplexPattern {
+    public static void main(String[] args) {
+        String text = "CHRIST UNIVERSITY";
+        int n = text.length();  // Number of characters in the text
+
+        for (int i = 0; i < n; i++) {
+            
+            for (int j = 0; j < i; j++) {
+                System.out.print("  ");
+            }
+
+           
+            for (int k = 0; k < n; k++) {
+                
+                System.out.print(text.charAt(i) + " ");
+            }
+
+        }
+    }
+}
+
+
+Expected output:
+C H R I S T   U N I V E R S I T Y 
+  H R I S T   U N I V E R S I T Y 
+    R I S T   U N I V E R S I T Y 
+      I S T   U N I V E R S I T Y 
+        S T   U N I V E R S I T Y 
+          T   U N I V E R S I T Y 
+            U N I V E R S I T Y 
+              N I V E R S I T Y 
+                I V E R S I T Y 
+                  V E R S I T Y 
+                    E R S I T Y 
+                      R S I T Y 
+                        S I T Y 
+                          I T Y 
+                            T Y 
+                              Y 
