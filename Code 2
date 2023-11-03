@@ -18,7 +18,6 @@ public class ComplexPattern {
                 System.out.print("* ");
             }
 
-            // Intentional error: Print numbers for the right side of the diamond in increasing order
             for (int m = 1; m <= i; m++) {
                 System.out.print(m + " ");
             }
@@ -43,7 +42,6 @@ public class ComplexPattern {
                 System.out.print("* ");
             }
 
-            // Intentional error: Print numbers for the right side of the diamond in increasing order
             for (int m = 1; m <= i; m++) {
                 System.out.print(m + " ");
             }
