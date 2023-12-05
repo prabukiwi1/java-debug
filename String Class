@@ -1,0 +1,19 @@
+class String1 {
+    public static void main(String[] args) {
+        String s1=new String("christuniversity1");
+           String s2=new String("christuniversity");
+           System.out.println(s1==s2);
+           String s3="christuniversity1";
+           System.out.println(s1.equals(s3));
+           String s4="christuniversity";
+           System.out.println(s3==s4);
+           String s5="christ"+"university";
+           System.out.println(s3==s5);
+           String s6="christ";
+           String s7=s6+"university";
+           System.out.println(s3==s7);
+           final String s8=s6+"university";
+           final String s9=s8;
+           System.out.println(s3==s9);
+    }
+}
