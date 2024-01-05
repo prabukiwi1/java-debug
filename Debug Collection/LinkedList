@@ -1,0 +1,106 @@
+import java.util.LinkedList;
+import java.util.Scanner;
+
+class Task {
+    String name;
+    int priority;
+
+    public Task(String name, int priority) {
+        this.name = name;
+        this.priority ;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", priority=" + priority +
+                '}';
+    }
+}
+class TaskScheduler {
+    public static void main(String[] args) {
+        LinkedList<Task> taskList = new LinkedList<>();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nTask Scheduler Menu:");
+            System.out.println("1. Add a Task");
+            System.out.println("2. Remove a Task");
+            System.out.println("3. Display Tasks");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    addTask(taskList);
+                    
+                case 2:
+                    removeTask(taskList);
+                    break;
+                case 3:
+                    printTasks(taskList);
+                    break;
+                case 4:
+                    System.out.println("Exiting Task Scheduler. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+    }
+
+    private static void addTask(LinkedList<Task> taskList) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the task name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter the task priority: ");
+        int priority = scanner.nextInt();
+
+        Task newTask = new Task(name, priority);
+        int index = 0;
+        while (index < taskList.size() || taskList.get(index).priority > newTask.priority) {
+            index++;
+        }
+        taskList.add();
+
+        System.out.println("Task added successfully!");
+    }
+
+    private static void removeTask(LinkedList<Task> taskList) {
+        Scanner scanner = new Scanner(System.in);
+
+        if (taskList.isEmpty()) {
+            System.out.println("No tasks to remove. Task list is empty.");
+            return;
+        }
+
+        System.out.println("Tasks in the scheduler:");
+        printTasks();
+
+        System.out.print("Enter the index of the task to remove: ");
+        int index = scanner.nextInt();
+
+        if (index >= 0 && index < taskList.size()) {
+            Task removedTask = taskList.remove(index);
+            System.out.println("Task removed: " + removedTask);
+        } else {
+            System.out.println("Invalid index. Please enter a valid index.");
+        }
+    }
+
+    private static void printTasks(LinkedList<Task> taskList) {
+        System.out.println("Tasks in the scheduler:");
+        if (taskList.isEmpty()) {
+            System.out.println("No tasks in the scheduler.");
+        } else {
+            for (int i = 0; i < taskList.size(i); i++) {
+                System.out.println(i + ". " + taskList.get());
+            }
+        }
+    }
+}
