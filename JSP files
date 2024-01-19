@@ -1,0 +1,180 @@
+Index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+</head>
+<body>
+    <form action="LoginServlet" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+
+
+
+LoginServelt.java
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
+ */
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author prabup
+ */
+public class LoginServlet extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+   
+        protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/Login", "root", "");
+
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM Log WHERE username=? AND password=?");
+            pst.setString(1, username);
+            pst.setString(2, password);
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                HttpSession session = request.getSession();
+                session.setAttribute("username", username);
+                session.setAttribute("loginTime", new Date());
+                insertLoginRecord(con, username);
+                response.sendRedirect("welcome.jsp");
+            } else {
+                // Login failed
+                PrintWriter out = response.getWriter();
+                out.println("Invalid username or password");
+            }
+
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+        private void insertLoginRecord(Connection con, String username) throws Exception {
+        String query = "INSERT INTO user_sessions (username, login_time) VALUES (?, ?)";
+        try (PreparedStatement pst = con.prepareStatement(query)) {
+            pst.setString(1, username);
+            pst.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            pst.executeUpdate();
+        }
+    }
+}
+
+
+Welcome.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.Date, java.text.SimpleDateFormat" %>
+<%@ page import="javax.servlet.http.HttpSession" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome Page</title>
+</head>
+<body>
+    <%
+        HttpSession session1 = request.getSession(false);
+
+        // Check if the user is logged in
+        if (session1 != null && session1.getAttribute("username") != null) {
+            String username = (String) session1.getAttribute("username");
+            Date loginTime = (Date) session1.getAttribute("loginTime");
+
+            // Format the login time using SimpleDateFormat
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedLoginTime = sdf.format(loginTime);
+
+            // Display user information
+    %>
+            <h2>Welcome, <%= username %></h2>
+            <p>Login Time: <%= formattedLoginTime %></p>
+            <!-- Add your content for the welcome page here -->
+            <a href="logout.jsp">Logout</a>
+    <%
+        } else {
+            // Redirect to login page if the user is not logged in
+            response.sendRedirect("index.html"); // Change to the appropriate page
+        }
+    %>
+</body>
+</html>
+
+
+logout.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.PreparedStatement, java.sql.Timestamp"%>
+<%@ page import="javax.servlet.ServletException, javax.servlet.annotation.WebServlet, javax.servlet.http.HttpServlet, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, javax.servlet.http.HttpSession"%>
+
+<%
+    // Check if the user is logged in
+    HttpSession session1 = request.getSession(false);
+    if (session1 != null && session1.getAttribute("username") != null) {
+        String username = (String) session1.getAttribute("username");
+
+        // Update logout time in the database
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost/Login", "root", "");
+         
+            String query = "UPDATE user_sessions SET logout_time = ? WHERE username = ?";
+            try (PreparedStatement pst = con.prepareStatement(query)) {
+                pst.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                pst.setString(2, username);
+                pst.executeUpdate();
+                System.out.println("Logout"+new Timestamp(System.currentTimeMillis()));
+                
+            }
+
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Invalidate the session
+        session1.invalidate();
+    }
+
+    // Redirect to the login page
+    response.sendRedirect("index.html"); // Change to the appropriate page
+%>
